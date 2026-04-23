@@ -296,7 +296,17 @@
 
   <script>
     const API = 'https://beytenu.org.il/wp-json/wp/v2';
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmOmmy24c3xXKpd3uk2aTjo8VvmAkGTn0",
+      authDomain: "israel-beytenu-app.firebaseapp.com",
+      projectId: "israel-beytenu-app",
+      storageBucket: "israel-beytenu-app.firebasestorage.app",
+      messagingSenderId: "403924130261",
+      appId: "1:403924130261:web:a503f21d4c9e1053e7055c"
+    };
     let deferredPrompt;
+    let messaging;
+    let tokenFcm;
 
     async function fetchPosts(pages = 10) {
       try {
@@ -446,19 +456,28 @@
         return;
       }
       
-      const btn = document.getElementById('notifyBtn');
-      btn.textContent = '✅ נרשמת להתראות!';
-      btn.disabled = true;
-      btn.style.background = '#28a745';
-      
-      localStorage.setItem('beytenu_notifications', 'true');
-    }
-    
-    if (localStorage.getItem('beytenu_notifications')) {
-      const btn = document.getElementById('notifyBtn');
-      btn.textContent = '✅ הנך רשום להתראות';
-      btn.disabled = true;
-      btn.style.background = '#28a745';
+      try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+        const { getMessaging, getToken } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging.js");
+        
+        window.firebaseApp = initializeApp(firebaseConfig);
+        window.messaging = getMessaging(window.firebaseApp);
+        
+        tokenFcm = await getToken(window.messaging, {
+          vapidKey: "BEl62iuygGRuF0FsZ7W7T3Tn7d1S7R3vY5pBhNZYpYmJc5sWpJrXZJ8bGIZpYcJmXpZvN2vYmJc5sWpJrXZJ8bGIZpYcJmXpZvN2"
+        });
+        
+        const btn = document.getElementById('notifyBtn');
+        btn.textContent = '✅ נרשמת להתראות!';
+        btn.disabled = true;
+        btn.style.background = '#28a745';
+        
+        localStorage.setItem('beytenu_notifications', tokenFcm);
+        alert('✅ נרשמת בהצלחה!');
+      } catch (e) {
+        console.error(e);
+        alert('שגיאה: ' + e.message);
+      }
     }
   </script>
 </body>
