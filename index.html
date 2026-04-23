@@ -243,15 +243,11 @@
       <div class="menu-item" onclick="openLink('https://beytenu.org.il/join-our-party/')">הצטרפו אלינו</div>
       <div class="menu-item" onclick="openLink('https://beytenu.org.il/התפקדו/')">התפקדו</div>
       <div class="menu-item primary" onclick="openLink('https://beytenu.org.il/תרומות/')">תרומות</div>
-      <div class="menu-item" onclick="openLink('https://beytenu.org.il/meetings/')">חוגי בית</div>
+<div class="menu-item" onclick="openLink('https://beytenu.org.il/meetings/')">חוגי בית</div>
     </div>
-    <div class="section-title">קהילות</div>
-    <div class="menu-items">
-      <div class="menu-item" onclick="openLink('https://beytenu.org.il/צעירי-ישראל-ביתנו/')">צעירי ישראל ביתנו</div>
-      <div class="menu-item" onclick="openLink('https://beytenu.org.il/קהילת-הנשים-של-מפלגת-ישראל-ביתנו/')">קהילת הנשים</div>
-      <div class="menu-item" onclick="openLink('https://beytenu.org.il/מטה-הסרוגים/')">מטה הסרוגים</div>
-      <div class="menu-item" onclick="openLink('https://beytenu.org.il/מוניציפלי/')">הנבחרת המוניציפלית</div>
-    </div>
+    
+    <button class="notification-btn" id="notifyBtn" style="background:var(--accent);" onclick="subscribeNotifications()">🔔 הרשם להתראות</button>
+  </div>
   </div>
 
   <div id="achievementsPage" class="page">
@@ -437,6 +433,33 @@
     loadHome();
     loadPlatform();
     loadLiberman();
+    
+    async function subscribeNotifications() {
+      if (!('Notification' in window)) {
+        alert('הדפדפן שלך לא תומך בהתראות');
+        return;
+      }
+      
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        alert('צריך לאשר התראות בהגדרות');
+        return;
+      }
+      
+      const btn = document.getElementById('notifyBtn');
+      btn.textContent = '✅ נרשמת להתראות!';
+      btn.disabled = true;
+      btn.style.background = '#28a745';
+      
+      localStorage.setItem('beytenu_notifications', 'true');
+    }
+    
+    if (localStorage.getItem('beytenu_notifications')) {
+      const btn = document.getElementById('notifyBtn');
+      btn.textContent = '✅ הנך רשום להתראות';
+      btn.disabled = true;
+      btn.style.background = '#28a745';
+    }
   </script>
 </body>
 </html>
