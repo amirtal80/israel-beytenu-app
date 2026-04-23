@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ישראל ביתנו - שליחת התראות</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+    h1 { color: #0a1f3d; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+    button { background: #c5a059; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 18px; cursor: pointer; width: 100%; }
+    button:hover { background: #b08d4a; }
+    .status { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>📣 שליחת התראות</h1>
+  <p>ישראל ביתנו</p>
+  
+  <div class="form-group">
+    <label>סוג ההודעה:</label>
+    <select id="type">
+      <option value="news">📰 חדשות</option>
+      <option value="event">📅 אירוע</option>
+      <option value="interview">📺 ראיון בתקשורת</option>
+      <option value="urgent">🚨 דחוף</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label>כותרת:</label>
+    <input type="text" id="title" placeholder="למשל: ליברמן בראיון בחדשות 12">
+  </div>
+  
+  <div class="form-group">
+    <label>תוכן:</label>
+    <textarea id="body" rows="4" placeholder="פרטים נוספים..."></textarea>
+  </div>
+  
+  <button onclick="sendNotification()">שלח התראות</button>
+  
+  <div id="status" class="status"></div>
+
+  <hr>
+  <h2>📱 התקנת האפליקציה</h2>
+  <p>1. כנס ל: <strong>https://amirtal80.github.io/israel-beytenu-app</strong></p>
+  <p>2. לחץ על שלוש הנקודות > "הוסף למסך הבית"</p>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzBqAqKQ7yN3xDxJvGx1pJ0lZ9R5vPQ2r0vILe0J/exec';
+    
+    async function sendNotification() {
+      const type = document.getElementById('type').value;
+      const title = document.getElementById('title').value;
+      const body = document.getElementById('body').value;
+      const status = document.getElementById('status');
+      
+      if (!title || !body) {
+        status.className = 'status error';
+        status.textContent = 'נא למלא את כל השדות';
+        status.style.display = 'block';
+        return;
+      }
+      
+      try {
+        const url = `${API_URL}?action=send&type=${encodeURIComponent(type)}&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+        const response = await fetch(url);
+        const text = await response.text();
+        
+        status.className = 'status success';
+        status.textContent = '✅ ההודעה נשלחה בהצלחה!';
+        status.style.display = 'block';
+        
+        document.getElementById('title').value = '';
+        document.getElementById('body').value = '';
+      } catch (e) {
+        status.className = 'status error';
+        status.textContent = 'שגיאה: ' + e.message;
+        status.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
